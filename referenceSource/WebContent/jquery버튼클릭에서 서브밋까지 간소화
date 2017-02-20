@@ -1,0 +1,4 @@
+$("#btnSearch").on("click",function(){
+		$("#nowPage").val("1");
+		$("#mainForm").attr({"action":"/CMS/push/pushChart.tsis","method":"post"}).submit();
+	});

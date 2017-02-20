@@ -1,0 +1,175 @@
+<?xml version="1.0" encoding="euc-kr"?>
+<project basedir=".">
+	<!--job property setting -->
+	<property name="jeus.home" value="/SW/jeus/jeus7" />
+	<property name="app.home" value="/APP/chn_deploy" />
+	<property name="jeus.lib" value="/SW/jenkins/jeus_lib" />
+	<property name="app.lib" value="${app.home}/WEB-INF/lib" />
+	<property name="app.target" value="${app.home}/WEB-INF/classes" />
+	<property name="app.dist" value="${app.home}/WEB-INF/DIST" />
+
+	<!-- path for classpath -->
+	<path id="3rd.lib">
+		<fileset dir="${jeus.lib}">
+			<include name="*.jar" />
+		</fileset>
+		<fileset dir="${app.lib}">
+			<include name="*.jar" />
+		</fileset>
+	</path>
+
+	<!-- business build -->
+	<target name="business.build" depends="clean, business.compile, business.class.deploy" />
+
+	<!-- clean -->
+	<target name="clean">
+		<delete dir="${WORKSPACE}/build" />
+	</target>
+
+	<!-- business-->
+	<target name="business.compile">
+		<mkdir dir="${WORKSPACE}/build" />
+		<javac srcdir="${WORKSPACE}/src" destdir="${WORKSPACE}/build" debug="true" failonerror="true" source="1.7" target="1.7" nowarn="false" includeantruntime="false">
+			<classpath refid="3rd.lib" />
+			<include name="**/*.java" />
+		</javac>
+	</target>
+
+	<target name="business.class.deploy">
+		<delete dir="${app.target}/chn" />
+		<copy todir="${app.target}/chn">
+			<fileset dir="${WORKSPACE}/build/chn">
+				<include name="**/*" />
+			</fileset>
+		</copy>
+		<delete dir="${app.target}/com/itrscom" />
+		<copy todir="${app.target}/com/itrscom">
+			<fileset dir="${WORKSPACE}/build/com/itrscom">
+				<include name="**/*" />
+			</fileset>
+		</copy>
+	</target>
+
+	<target name="business.resource.deploy">
+		<delete dir="${app.target}/com/tsis" />
+		<copy todir="${app.target}/com/tsis">
+			<fileset dir="${WORKSPACE}/resource/com/tsis">
+				<include name="**/*" />
+			</fileset>
+		</copy>
+
+		<delete dir="${app.target}/res" />
+		<copy todir="${app.target}/res">
+			<fileset dir="${WORKSPACE}/resource/res">
+				<include name="**/*" />
+			</fileset>
+		</copy>
+		<delete file="${app.target}/logback.xml" />
+		<copy file="${WORKSPACE}/resource/logback.xml" tofile="${app.target}/logback.xml" />
+	</target>
+
+   <target name="business.jsp.deploy">
+        <delete dir="${app.home}/WEB-INF/view" />
+        <copy todir="${app.home}/WEB-INF/view">
+            <fileset dir="${WORKSPACE}/view">
+                <include name="**/*" />
+            </fileset>
+        </copy>
+    </target>
+	
+   <!-- web sftp -->
+    <target name="business.web.all.deploy" depends="business.web.hp.deploy, business.web.ma.deploy, business.web.ex.deploy" />
+	
+    <target name="business.web.hp.deploy">
+    	<scp todir="${USERID}:${PASSWORD}@${WEBSERVER}:/APP/docroot/chn_homepage/css/homepage" sftp="true" trust="true" >
+          <fileset dir="${WORKSPACE}/WebContent/css/homepage">
+            <include name="**/*"/>
+          </fileset>
+    	</scp>
+        <scp todir="${USERID}:${PASSWORD}@${WEBSERVER}:/APP/docroot/chn_homepage/images/homepage" sftp="true" trust="true">
+          <fileset dir="${WORKSPACE}/WebContent/images/homepage">
+            <include name="**/*"/>
+          </fileset>
+        </scp>
+        <scp todir="${USERID}:${PASSWORD}@${WEBSERVER}:/APP/docroot/chn_homepage/js/homepage" sftp="true" trust="true">
+          <fileset dir="${WORKSPACE}/WebContent/js/homepage">
+            <include name="**/*"/>
+          </fileset>
+        </scp>
+    	<!-- web sftp mall-->
+        <scp todir="${USERID}:${PASSWORD}@${WEBSERVER}:/APP/docroot/chn_homepage/images/mall" sftp="true" trust="true">
+          <fileset dir="${WORKSPACE}/WebContent/images/mall">
+            <include name="**/*"/>
+          </fileset>
+        </scp>
+        <scp todir="${USERID}:${PASSWORD}@${WEBSERVER}:/APP/docroot/chn_homepage/js/mall" sftp="true" trust="true">
+          <fileset dir="${WORKSPACE}/WebContent/js/mall">
+            <include name="**/*"/>
+          </fileset>
+        </scp>
+    </target>
+
+    <target name="business.web.ma.deploy">
+        <scp todir="${USERID}:${PASSWORD}@${WEBSERVER}:/APP/docroot/chn_companyhomepage/css/ma" sftp="true" trust="true">
+          <fileset dir="${WORKSPACE}/WebContent/css/ma">
+            <include name="**/*"/>
+          </fileset>
+        </scp>
+        <scp todir="${USERID}:${PASSWORD}@${WEBSERVER}:/APP/docroot/chn_companyhomepage/images/ma" sftp="true" trust="true">
+          <fileset dir="${WORKSPACE}/WebContent/images/ma">
+            <include name="**/*"/>
+          </fileset>
+        </scp>
+        <scp todir="${USERID}:${PASSWORD}@${WEBSERVER}:/APP/docroot/chn_companyhomepage/js/ma" sftp="true" trust="true">
+          <fileset dir="${WORKSPACE}/WebContent/js/ma">
+            <include name="**/*"/>
+          </fileset>
+        </scp>
+    </target>
+	
+	<target name="business.web.ex.deploy">
+        <scp todir="${USERID}:${PASSWORD}@${WEBSERVER}:/APP/docroot/chn_saleshomepage/css/ex" sftp="true" trust="true">
+          <fileset dir="${WORKSPACE}/WebContent/css/ex">
+            <include name="**/*"/>
+          </fileset>
+        </scp>
+        <scp todir="${USERID}:${PASSWORD}@${WEBSERVER}:/APP/docroot/chn_saleshomepage/images/ex" sftp="true" trust="true">
+          <fileset dir="${WORKSPACE}/WebContent/images/ex">
+            <include name="**/*"/>
+          </fileset>
+        </scp>
+        <scp todir="${USERID}:${PASSWORD}@${WEBSERVER}:/APP/docroot/chn_saleshomepage/js/ex" sftp="true" trust="true">
+          <fileset dir="${WORKSPACE}/WebContent/js/ex">
+            <include name="**/*"/>
+          </fileset>
+        </scp>
+    </target>
+	
+	<target name="business.dist">
+        <jar destfile="${WORKSPACE}/dist/bnl_chn_business.jar">
+            <fileset dir="${WORKSPACE}/build" includes="**/*.class" />
+            <manifest>
+                <attribute name="Implementation-Title" value="business" />
+                <attribute name="Implementation-Version" value="1.0" />
+                <attribute name="Implementation-Vendor" value="TBroad_FMS" />
+            </manifest>
+        </jar>
+    </target>
+
+    <target name="business.copy">
+        <delete file="${app.dist}/bnl_chn_business.jar" />
+        <copy file="${WORKSPACE}/dist/bnl_chn_business.jar" todir="${app.dist}" />
+    </target>
+
+    <target name="business.deploy">
+        <delete file="${app.dist}/deploy/bnl_chn_business.jar" />
+        <copy file="${app.dist}/bnl_chn_business.jar" todir="${app.dist}/deploy" />
+    </target>
+
+    <target name="deployToServer">
+        <copy todir="${app.lib}">
+            <fileset dir="${app.dist}/deploy" />
+        </copy>
+    </target>
+
+</project>

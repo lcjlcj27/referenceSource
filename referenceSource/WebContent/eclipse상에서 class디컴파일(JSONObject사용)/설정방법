@@ -1,0 +1,3 @@
+1. 이클립스 plugins 폴더 안에 net.sf.jadclipse_3.3.0.jar 넣는다
+2. 빌드패스 잡혀있는 java jdk bin 폴더 안에 jad.exe 넣는다
+3. references -> general -> editors -> file associations 에서 *.class 파일 선택후 하단에 jadClipse Class File Viewer(default)로 설정후 이클립스 재기동
